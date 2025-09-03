@@ -39,3 +39,21 @@
 
 # debug information files
 *.dwo
+
+# Ignore any build directory anywhere
+**/build/
+
+# Common CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Compiled objects
+*.o
+*.obj
+*.pdb
+*.exe
+*.out
+*.a
+*.lib
