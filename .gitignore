@@ -57,3 +57,7 @@ Makefile
 *.out
 *.a
 *.lib
+
+# VSCode
+
+**/.vscode/
