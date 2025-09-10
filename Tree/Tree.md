@@ -15,8 +15,8 @@
 - An **AVL Tree** is a **self-balancing Binary Search Tree**.  
   - Named after inventors **Adelson-Velsky and Landis**.  
   - The **balance factor** of a node = `height(left subtree) - height(right subtree)`.  
-  - Balance factor ∈ {-1, 0, 1} → Tree is balanced.  
-  - If balance factor goes outside this range → **rotations** are applied.  
+  - Balance factor between -1 and 1 then tree is balanced.  
+  - If balance factor goes outside this range then **rotations** are applied.  
   - Rotations used:
     - **Right Rotation (LL case)**  
     - **Left Rotation (RR case)**  
