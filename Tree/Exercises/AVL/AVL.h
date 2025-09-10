@@ -23,6 +23,7 @@ private:
     int getBalance(Node* node) const;
     void printTree(Node* node, ostream& out) const;
     void chopTree(Node*& node);
+    int getMax(int a, int b) const { return (a > b) ? a : b; }
 
 
     Node* rightRotate(Node* y);
