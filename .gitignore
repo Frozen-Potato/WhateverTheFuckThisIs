@@ -57,6 +57,7 @@ Makefile
 *.out
 *.a
 *.lib
+*.log
 
 # VSCode
 
