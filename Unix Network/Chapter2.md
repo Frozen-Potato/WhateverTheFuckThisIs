@@ -38,7 +38,7 @@ flowchart TD
   B --> C[Client: ACK]
   C --> D[Connection Established]
   D --> E[Data Transfer with ACKs]
-  E --> F[Connection Termination (FIN/ACK)]
+  E --> F["Connection Termination (FIN/ACK)"]
   F --> G[TIME_WAIT State]
 ```
 
@@ -66,7 +66,7 @@ flowchart TD
   A[Association Setup] --> B[Multi-Stream Established]
   B --> C[Data Sent Across Multiple Streams]
   C --> D[Handles Message Boundaries]
-  C --> E[Supports Multiple IP Paths (Multihoming)]
+  C --> E["Supports Multiple IP Paths (Multihoming)"]
   D --> F[Association Termination]
 ```
 
