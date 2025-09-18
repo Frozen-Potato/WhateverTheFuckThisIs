@@ -1,6 +1,6 @@
-# 📘 UNIX Network Programming — Chapter 1 Study Notes
+# Chapter 1 Study Notes
 
-## 🐟 Fishbone Diagram — Chapter 1: Introduction
+## Chapter 1: Introduction
 
 ```mermaid
 mindmap
