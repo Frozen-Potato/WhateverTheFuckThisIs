@@ -38,7 +38,7 @@ mindmap
 
 ---
 
-## 📌 Summary of Chapter 1
+## Summary of Chapter 1
 - Client/server model is the foundation of network programming.  
 - TCP/IP stack is central: Application → Transport → Network → Datalink.  
 - Error handling wrappers make code cleaner and safer.  
