@@ -9,35 +9,30 @@ mindmap
       TCP
       UDP
       SCTP
-      IPv4 vs IPv6
-    Client/Server Model
+    Client/Server
       Client initiates
       Server responds
-      Iterative servers
-      Concurrent servers
     TCP/IP Stack
-      Application Layer
-      Transport Layer
-      Network Layer
-      Link Layer
+      Application
+      Transport
+      Network
+      Link
     Error Handling
       System calls may fail
-      Wrapper functions
-      Signals (SIGPIPE)
-    Portability & Standards
-      POSIX compliance
-      BSD history
-      32-bit vs 64-bit
+      Wrappers
+    Portability
+      POSIX
+      IPv4 vs IPv6
     First Programs
-      TCP Daytime Client
-      TCP Daytime Server
+      Daytime Client
+      Daytime Server
     Models
-      OSI (7 layers)
-      TCP/IP (4 layers)
+      OSI (7)
+      TCP/IP (4)
     Environment
       LAN vs WAN
       Routers
-      Test hosts (Linux, BSD, Solaris, etc.)
+
 
 ```
 
