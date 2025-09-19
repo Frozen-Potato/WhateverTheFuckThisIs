@@ -1,6 +1,6 @@
-# 📘 UNIX Network Programming — Chapter 2 Study Notes
+# Chapter 2 
 
-## 🧩 Simplified Mind Map
+## Mind Map
 
 ```mermaid
 mindmap
