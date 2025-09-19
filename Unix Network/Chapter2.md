@@ -33,13 +33,18 @@ mindmap
 ### 1. TCP — Connection-Oriented & Reliable
 
 ```mermaid
-flowchart TD
-  A[Client: SYN] --> B[Server: SYN-ACK]
-  B --> C[Client: ACK]
-  C --> D[Connection Established]
-  D --> E[Data Transfer with ACKs]
-  E --> F["Connection Termination (FIN/ACK)"]
-  F --> G[TIME_WAIT State]
+sequenceDiagram
+    participant Client
+    participant Server
+
+    Client->>Server: SYN
+    Server->>Client: SYN+ACK
+    Client->>Server: ACK
+    Client->>Server: send("Hello")
+    Server->>Client: send("Hi")
+    Client->>Server: close()
+    Server->>Client: close()
+
 ```
 
 Shows the **3-way handshake**, reliable data transfer with ACKs, and proper termination.  
