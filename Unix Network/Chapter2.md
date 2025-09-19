@@ -22,7 +22,6 @@ mindmap
       Ephemeral ports
     Performance
       Buffers
-      Nagle's Algorithm
       Delayed ACK
 ```
 
