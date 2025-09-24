@@ -94,7 +94,110 @@
   - `show(const string& label)` → prints vector size and contents
 
 ---
+## Diagram
 
+```mermaid
+classDiagram
+    %% Namespaces
+    namespace libA {
+        class print_T_ref {
+            <<function>>
+        }
+        class printR_T_rref {
+            <<function>>
+        }
+        class typeOfArg_T_ref {
+            <<function>>
+        }
+    }
+
+    namespace libB {
+        class operator_star_string_string {
+            <<operator*>>
+        }
+        class operator_star_string_int {
+            <<operator*>>
+        }
+        class operator_star_int_string {
+            <<operator*>>
+        }
+
+        class multiply_T {
+            <<function>>
+        }
+        class multiply_T_R {
+            <<function>>
+        }
+        class multiply_vector {
+            <<function>>
+        }
+
+        class print_T_lvalue {
+            <<function>>
+        }
+        class print_T_rvalue {
+            <<function>>
+        }
+        class print_label_T_lvalue {
+            <<function>>
+        }
+        class print_label_T_rvalue {
+            <<function>>
+        }
+        class typeOfArg_T {
+            <<function>>
+        }
+    }
+
+    %% Class template ex<T>
+    class ex_T {
+        - T value
+        + ex()
+        + ex(const T& x)
+        + ex(T&& x)
+        + ex(const ex& other)
+        + ex(ex&& other)
+        + operator=(const ex& other)
+        + operator=(ex&& other)
+        + ~ex()
+        + show(string label)
+    }
+
+    %% Specialization ex<string>
+    class ex_string {
+        - string value
+        + ex()
+        + ex(const string& x)
+        + ex(const ex& other)
+        + ex(ex&& other)
+        + operator=(const ex& other)
+        + operator=(ex&& other)
+        + ~ex()
+        + show(string label)
+    }
+
+    %% Specialization ex<vector<T>>
+    class ex_vector_T {
+        - vector<T> value
+        + ex()
+        + ex(const vector<T>&)
+        + ex(vector<T>&&)
+        + ex(initializer_list<T>)
+        + ex(const ex& other)
+        + ex(ex&& other)
+        + operator=(const ex& other)
+        + operator=(ex&& other)
+        + ~ex()
+        + show(string label)
+    }
+
+    %% Relationships
+    ex_T <|-- ex_string
+    ex_T <|-- ex_vector_T
+
+```
+
+---
 ## Example Usage (from `main`)
 ```cpp
 ex<int> C(2);
