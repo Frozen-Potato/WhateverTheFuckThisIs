@@ -103,6 +103,7 @@ class ex {
 
         ex() : value{} {};
         ex(const T& x) : value(x) {};
+        ex(T&& x) : value(std::forward<T>(x)) {};
         ex(const ex& other) : value(other.value) { std::cout << "Call Copy Ctor\n"; };
         ex(ex&& other) noexcept : value(std::move(other.value)) { std::cout << "Call Move Ctor\n"; };
 
@@ -158,6 +159,39 @@ class ex<std::string> {
         };
 };
 
+template<typename T>
+class ex<std::vector<T>>{
+    std::vector<T> value;
+    public:
+        ex() : value{} {};
+        ex(const std::vector<T>& val) : value(val) { std::cout << "Call Parameterized Ctor\n"; };
+        ex(std::vector<T>&& val) : value(std::move(val)) { std::cout << "Call Parameterized Ctor\n"; };
+        ex(std::initializer_list<T> initList) : value(initList) { std::cout << "Call initializer_list Ctor\n";};
+        ex(const ex& other) : value(other.value) { std::cout << "Call Vector Copy Ctor\n"; };
+        ex(ex&& other) noexcept : value(std::move(other.value)) { std::cout << "Call Vector Move Ctor\n"; };
+
+        ex& operator=(const ex& other) noexcept {
+            if (this != &other){
+                value = other.value;
+            }
+            return *this;
+        }
+
+        ex& operator=(ex&& other) noexcept {
+            if (this != &other) {
+                value = std::move(other.value);
+            }
+            return *this;
+        }   
+
+        ~ex() = default;
+
+        void show(const std::string& label) {
+            std::cout << "[Vector specialization] size=" << value.size() << "\n";
+            libB::print(label, value);
+        };
+};
+
 int main() {
     using std::string;
     using libA::printR;
@@ -207,5 +241,12 @@ int main() {
     ex F = std::move(E);
     E.show("E");
     F.show("F");
-    return 1;
+
+    std::cout << "With specialization for std::vector\n";
+    ex<std::vector<int>> G{1,2,3,4};
+    G.show("G");
+    ex<std::vector<string>> H(arr);
+    H.show("H");
+    
+    return 0;
 }
