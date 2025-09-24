@@ -18,7 +18,7 @@ namespace libA {
 
     template <typename T>
     void typeOfArg(T& x){
-        std::cout << "Type of arg (libA) :" << typeid(x).name() << "\n";
+        std::cout << "Type of arg (libA): " << typeid(x).name() << "\n";
     }
 }
 
@@ -81,10 +81,46 @@ namespace libB {
     };
 
     template <typename T>
+    void print(const std::string& str,const T& x){
+        std::cout << "This is libB print: " << str << " = " << x << "\n";       
+    }
+
+    template <typename T>
     void typeOfArg(T& x){
-        std::cout << "Type of arg (libB) :" << typeid(x).name() << "\n";
+        std::cout << "Type of arg (libB): " << typeid(x).name() << "\n";
     }
 }
+
+template <typename T>
+class ex {
+    T vari;
+    public:
+
+        ex() : vari{} {};
+        ex(const T& x) : vari(x) {};
+        ex(const ex& other) : vari(other.vari) { std::cout << "call copy ctr\n"; };
+        ex(ex&& other) noexcept : vari(std::move(other.vari)) { std::cout << "call move ctr\n"; };
+
+        ex& operator=(const ex& other) noexcept {
+            if (this != &other){
+                vari = other.vari;
+            }
+            return *this;
+        }
+
+        ex& operator=(ex&& other) noexcept {
+            if (this != &other) {
+                vari = std::move(other.vari);
+            }
+            return *this;
+        }   
+
+        ~ex() = default;
+
+        void show(const std::string& str) {
+            libB::print(str, vari);
+        };
+};
 
 int main() {
     using std::string;
@@ -93,6 +129,21 @@ int main() {
     string str = "abc";
     std::vector<string> arr = {"lol", "fuck u"};
     std::vector<std::vector<int>> arr2 = {{1,2,4}, {2,2,3}};
+
+    ex C(2);
+    C.show("C");
+    
+    ex D = C;
+    C.show("C");
+    D.show("D");
+
+    ex<std::string> E("Holy fuck");
+    E.show("E");
+
+    ex F = std::move(E);
+    E.show("E");
+    F.show("F");
+
 
     libA::print(a);
     libA::typeOfArg(a);
