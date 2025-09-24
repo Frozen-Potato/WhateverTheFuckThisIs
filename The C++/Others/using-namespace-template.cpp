@@ -7,13 +7,13 @@ namespace libA {
     template <typename T>
     void print(T& x){
         using std::cout;
-        cout << "This is libA print: " << x << "\n";
+        cout << "Using libA print: " << x << "\n";
     }
 
     template <typename T>
     void printR(T&& x){
         using std::cout;
-        cout << "This is libA print rvalue: " << x << "\n";
+        cout << "Using libA print rvalue: " << x << "\n";
     }
 
     template <typename T>
@@ -72,17 +72,22 @@ namespace libB {
 
     template <typename T>
     void print(T& x){
-        std::cout << "This is libB print: [lvalue] " << x << "\n";       
+        std::cout << "Using libB print: [lvalue] " << x << "\n";       
     };
 
     template <typename T>
     void print(T&& x){
-        std::cout << "This is libB print: [rvalue] " << x << "\n";       
+        std::cout << "Using libB print: [rvalue] " << x << "\n";       
     };
 
     template <typename T>
-    void print(const std::string& str,const T& x){
-        std::cout << "This is libB print: " << str << " = " << x << "\n";       
+    void print(const std::string& str,T& x){
+        std::cout << "[lvalue] Using libB print: " << str << " = " << x << "\n";       
+    }
+
+    template <typename T>
+    void print(const std::string& str,T&& x){
+        std::cout << "[rvalue] Using libB print: " << str << " = " << x << "\n";       
     }
 
     template <typename T>
@@ -93,24 +98,24 @@ namespace libB {
 
 template <typename T>
 class ex {
-    T vari;
+    T value;
     public:
 
-        ex() : vari{} {};
-        ex(const T& x) : vari(x) {};
-        ex(const ex& other) : vari(other.vari) { std::cout << "call copy ctr\n"; };
-        ex(ex&& other) noexcept : vari(std::move(other.vari)) { std::cout << "call move ctr\n"; };
+        ex() : value{} {};
+        ex(const T& x) : value(x) {};
+        ex(const ex& other) : value(other.value) { std::cout << "Call Copy Ctor\n"; };
+        ex(ex&& other) noexcept : value(std::move(other.value)) { std::cout << "Call Move Ctor\n"; };
 
         ex& operator=(const ex& other) noexcept {
             if (this != &other){
-                vari = other.vari;
+                value = other.value;
             }
             return *this;
         }
 
         ex& operator=(ex&& other) noexcept {
             if (this != &other) {
-                vari = std::move(other.vari);
+                value = std::move(other.value);
             }
             return *this;
         }   
@@ -118,7 +123,38 @@ class ex {
         ~ex() = default;
 
         void show(const std::string& str) {
-            libB::print(str, vari);
+            libB::print(str, value);
+        };
+};
+
+template <>
+class ex<std::string> {
+    std::string value;
+    public:
+
+        ex() : value("") {};
+        ex(const std::string& x) : value(x) {};
+        ex(const ex& other) : value(other.value) { std::cout << "Call String Copy Ctor\n"; };
+        ex(ex&& other) noexcept : value(std::move(other.value)) { std::cout << "Call String Move Ctor\n"; };
+
+        ex& operator=(const ex& other) noexcept {
+            if (this != &other){
+                value = other.value;
+            }
+            return *this;
+        }
+
+        ex& operator=(ex&& other) noexcept {
+            if (this != &other) {
+                value = std::move(other.value);
+            }
+            return *this;
+        }   
+
+        ~ex() = default;
+
+        void show(const std::string& label) {
+            libB::print(label, value + " (length: " + std::to_string(value.size()) + ")");
         };
 };
 
@@ -130,20 +166,7 @@ int main() {
     std::vector<string> arr = {"lol", "fuck u"};
     std::vector<std::vector<int>> arr2 = {{1,2,4}, {2,2,3}};
 
-    ex C(2);
-    C.show("C");
-    
-    ex D = C;
-    C.show("C");
-    D.show("D");
-
-    ex<std::string> E("Holy fuck");
-    E.show("E");
-
-    ex F = std::move(E);
-    E.show("E");
-    F.show("F");
-
+    std::cout << "Same print, different namespace libA vs libB: \n";
 
     libA::print(a);
     libA::typeOfArg(a);
@@ -151,17 +174,38 @@ int main() {
     libB::print(str);
     libB::typeOfArg(str);
     
-    printR("this is rvalue");
+    std::cout << "--Using a linebreak--\n";
 
-    std::cout << "Using overload operator* to multiply string (custom logic): \n";
+    printR("Using rvalue");
+
+    std::cout << "--Using a linebreak--\n";
+
+    std::cout << "Using overload operator* to apply custom logic: \n";
 
     string dumbResult = libB::multiply(str, a);
-    libB::print(dumbResult);
+    libB::print("string * int[lvalue]", dumbResult);
     string result =  libB::multiply(str);
-    libB::print(result);
-    libB::print(libB::multiply(str, 4));
-    libB::print(libB::multiply(std::vector<int> {1,2,3}));
-    libB::print(libB::multiply(arr));
-    libB::print(libB::multiply(arr2));
+    libB::print("string * string", result);
+    libB::print("string * int[rvalue]",libB::multiply(str, 4));
+    libB::print("vector[rvalue] * vector[rvalue]",libB::multiply(std::vector<int> {1,2,3}));
+    libB::print("vector[lvalue] * vector[lvalue]",libB::multiply(arr));
+    libB::print("vector<vector>[lvalue] * vector<vector>[lvalue]",libB::multiply(arr2));
+
+    std::cout << "--Using a linebreak--\n";
+    std::cout << "Class template T with specialization for std::string\n";
+    ex C(2);
+    C.show("C");
+    
+    ex D = C;
+    C.show("C");
+    D.show("D");
+
+    std::cout << "With specialization for std::string\n";
+    ex<std::string> E("Holy fuck");
+    E.show("E");
+
+    ex F = std::move(E);
+    E.show("E");
+    F.show("F");
     return 1;
 }
