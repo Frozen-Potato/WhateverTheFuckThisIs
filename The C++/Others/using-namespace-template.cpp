@@ -192,10 +192,24 @@ class ex<std::vector<T>>{
         };
 };
 
+constexpr int cti(char c){
+    return c - '0';
+}
+
+template <char... Cs>
+constexpr int operator"" _int() {
+    int result = 0;
+    int digit[] = {cti(Cs)...};
+    for (int d : digit) {
+        result = result * 10 + d;
+    }
+    return result;
+}
+
 int main() {
+    constexpr int a = 3_int;
     using std::string;
     using libA::printR;
-    int a = 3;
     string str = "abc";
     std::vector<string> arr = {"lol", "fuck u"};
     std::vector<std::vector<int>> arr2 = {{1,2,4}, {2,2,3}};
