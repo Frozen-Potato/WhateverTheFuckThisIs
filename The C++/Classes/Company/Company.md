@@ -15,10 +15,13 @@ classDiagram
 
     %% Derived classes
     class Manager {
+        - std::vector<std::weak_ptr<Project>> currentProjects
         + Manager(std::string name, int id)
         + ~Manager()
         + work()
         + getRole() : std::string
+        + addProject(project : const std::shared_ptr<Project>&)
+        + getProjects() : const std::vector<std::weak_ptr<Project>>&
     }
 
     class Engineer {
@@ -44,7 +47,7 @@ classDiagram
         + ~HR()
         + work()
         + getRole() : std::string
-        + recruit(person : std::shared_ptr<Employee>)
+        + recruit(person : const std::shared_ptr<Employee>&)
         + getRecruited() : const Vec&
         + getRecruitedCopy() : Vec
     }
@@ -54,9 +57,22 @@ classDiagram
         - std::string name
         - int foundingYear
         + Company(std::string name, int year)
+        + ~Company()
         + getFoundingYear() : const int&
         + getName() : const std::string&
         + getEmployed() : const Vec&
+        + addEmployee(person : const std::shared_ptr<Employee>&)
+        + addEmployeeR<T, Args...>(Args&&... args)
+    }
+
+    class Project {
+        - std::string name
+        - std::chrono::year_month_day startDate
+        - Vec currentWorkers
+        - std::weak_ptr<Manager> PM
+        + Project(std::string name, std::shared_ptr<Manager> manager, std::chrono::year_month_day date)
+        + ~Project()
+        + printDate(date : const std::chrono::year_month_day&) : std::string
         + addEmployee(person : const std::shared_ptr<Employee>&)
         + addEmployeeR<T, Args...>(Args&&... args)
     }
@@ -67,7 +83,10 @@ classDiagram
     Intern --|> Employee
     HR --|> Employee
 
-    %% Association
+    %% Associations
     Company "1" --> "*" Employee : employs
     HR "1" --> "*" Employee : recruits
+    Project "1" --> "*" Employee : currentWorkers
+    Project "1" --> "1" Manager : PM
+    Manager "1" --> "*" Project : manages
 ```

@@ -23,6 +23,34 @@ class Company {
         }
 };
 
+class Project: public std::enable_shared_from_this<Project> {
+    std::string name;
+    std::chrono::year_month_day startDate;
+    Vec currentWorker;
+    std::weak_ptr<Manager> PM;
+    public:
+        Project(std::string name, std::shared_ptr<Manager> person ,std::chrono::year_month_day date) : name(name), PM(person), startDate(date) {
+            std::cout << "New project registered on " << printDate(startDate) << ". Managed by " << person->getName() <<"\n";
+            person->addProject(shared_from_this());
+        };
+        ~Project() = default;
+
+        std::string printDate(const std::chrono::year_month_day& date) const {
+            std::ostringstream result;
+            result << (unsigned)date.day() << '-' << (unsigned)date.month() << '-' << (int)date.year();
+            return result.str();
+        }
+        
+        void addEmployee(const std::shared_ptr<Employee>& person) {
+            currentWorker.emplace_back(person);
+        }
+
+        template<typename T, typename... Args>
+        void addEmployeeR(Args&&... args){
+            currentWorker.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
+        }
+};
+
 class Employee {
     std::string name;
     int id;
@@ -38,12 +66,18 @@ class Employee {
 };
 
 class Manager : public Employee {
+    std::vector<std::weak_ptr<Project>> currentProject;
     public:
         Manager(std::string name, int id) : Employee(std::move(name), id) {};
         ~Manager() { std::cout << "Lost 1 Manager\n"; };
 
         void work() override { std::cout << "Managing...\n"; };
         std::string getRole() const override { return "Manager\n"; };
+        std::vector<std::weak_ptr<Project>> getProject() const { return currentProject; };
+        
+        void addProject(std::shared_ptr<Project> project){
+            currentProject.emplace_back(project);
+        } 
 };
 
 class Engineer : public Employee {
