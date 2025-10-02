@@ -5,20 +5,23 @@ Basic Structural Modeling
     Definition: set of objects with attributes, operations, relationships
     Attributes
     Operations
-    (public, private, protected)
-    Abstract vs Concrete Classes
+    (public +, private -, protected #)
+    Abstract (italic) vs Concrete Classes
     Active Classes
   Relationships
-    Association
+    Association (straight line)
       Multiplicity
-      Roles
-      Aggregation
-      Composition
+        one to one
+        one to many
+        many to many
+      Roles (verb on line)
+      Aggregation (straight line, unfilled diamond)
+      Composition (straight line, filled diamond)
     Generalization
-      Inheritance
-      Abstract Parent
-    Dependency
-    Realization
+      Inheritance (straight line, empty arrow toward parent)
+      Abstract Parent (italic name)
+    Dependency (dash to dependant, solid arrow)
+    Realization (dash to interface, solid arrow)
   Common Mechanisms
     Specifications
     Adornments
