@@ -1,4 +1,4 @@
-# Day 1 – Improve the foundation of the (library)[../../The%20C++/Classes/Exercise/Library]
+# Day 1 – Improve the foundation of the [library](../../The%20C++/Classes/Exercise/Library)
 
 One must begin, as the Victorians might say, with “a proper foundation.”  
 Today’s labours focus on strengthening the object-oriented skeleton of the Library Management System, ensuring it behaves less like a rickety shed and more like a fine piece of Edwardian architecture.
