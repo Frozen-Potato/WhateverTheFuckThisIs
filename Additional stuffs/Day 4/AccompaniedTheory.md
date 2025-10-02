@@ -4,29 +4,30 @@
 mindmap
   root((State Diagram))
     States
-      Definition:::def
-      Initial State (●)
-      Final State (◎)
-      Simple State
-      Composite State
-      Substate / Superstate
-      Entry / Exit Actions
+      "Definition (conditions during object life)"
+      "Initial State (●)"
+      "Final State (◎)"
+      "Simple State"
+      "Composite State"
+      "Substate / Superstate"
+      "Entry / Exit Actions"
     Transitions
-      Definition:::def
-      Trigger (event)
-      Guard Condition [ ]
-      Action (/ action)
-      Notation: Event [Guard] / Action
+      "Definition (movement between states)"
+      "Trigger (event)"
+      "Guard Condition [condition]"
+      "Action (/action)"
+      "Notation: Event [Guard] / Action"
     Pseudostates
-      Initial
-      Final
-      Choice (◆)
-      Junction (merge)
-      History (H, H*)
+      "Initial"
+      "Final"
+      "Choice (◆)"
+      "Junction (merge)"
+      "History (H or H*)"
     Relationships
-      State → State (solid arrow)
-      Composite → Substates (containment)
-      Entry / Exit points
+      "State to State (solid arrow)"
+      "Composite to Substates (containment)"
+      "Entry and Exit points"
+
 ```
 ---
 
