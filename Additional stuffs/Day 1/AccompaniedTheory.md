@@ -6,7 +6,7 @@ Basic Structural Modeling
     Attributes
     Operations
     (public +, private -, protected #)
-    Abstract (italic) vs Concrete Classes
+    Abstract vs Concrete Classes
     Active Classes
   Relationships
     Association (straight line)
