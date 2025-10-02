@@ -3,25 +3,31 @@
 ```mermaid
 mindmap
   root((Sequence Diagram))
-    Definition
-      "Interaction diagram"
-      "Emphasises time ordering of messages"
-    Elements
-      "Objects"
-      "Lifelines"
-      "Messages"
-      "Constraints: new, destroyed, transient"
-    Uses
-      "Show dynamic behaviour"
-      "Model creation/modification/destruction"
-      "Capture scenarios and flows"
-    Features
-      "Vertical axis = time"
-      "Horizontal axis = objects"
-      "Clear visual cue to control flow"
-    Notes
-      "Best for message order"
-      "Complementary to collaboration diagrams"
+    Lifelines
+      Definition:::def
+      Actor (stick figure)
+      Object (rectangle + dashed line)
+      Boundary / Control / Entity stereotypes
+    Messages
+      Synchronous (solid arrow, filled head)
+      Asynchronous (solid arrow, open head)
+      Return (dashed arrow back)
+      Create (arrow to head of lifeline)
+      Destroy (X at end)
+    Activations
+      Thin rectangle on lifeline
+    Fragments
+      alt (if/else)
+      loop (repetition)
+      opt (optional)
+      par (parallel)
+      region (critical section)
+    Relationships
+      Time order: top → bottom
+      Actor to Object (start of interaction)
+      Object to Object (message passing)
+      Self-call (arrow loops back)
+
 
 ```
 
