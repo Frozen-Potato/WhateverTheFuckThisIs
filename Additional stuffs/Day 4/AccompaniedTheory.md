@@ -20,7 +20,8 @@ mindmap
       "Trigger"
         "Event that causes transition"
       Guard
-        "Condition (boolean expression)"
+        Condition 
+          (boolean expression)
       Action
         Executed during transition 
           (/action)
