@@ -245,16 +245,18 @@ classDiagram
         +listMembers()
     }
 
-    %% Inheritance
+    %% Inheritance (is-a)
     Media <|.. Book
     Media <|.. Magazine
     Member <|-- Student
     Member <|-- Teacher
 
-    %% Associations
-    Library "1" --> "*" Media : manages
-    Library "1" --> "*" Member : manages
-    Member "1" --> "*" Media : borrows
+    %% Aggregation (unfilled diamond)
+    Library o-- Media : manages
+    Library o-- Member : manages
+
+    %% Association (straight line)
+    Member -- Media : borrows
 ```
 
 ## State Diagram for Book
