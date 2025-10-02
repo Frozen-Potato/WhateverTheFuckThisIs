@@ -4,29 +4,51 @@
 mindmap
   root((Sequence Diagram))
     Lifelines
-      "Definition (participant in interaction)"
-      "Actor (stick figure)"
-      "Object (rectangle + dashed line)"
-      "Boundary / Control / Entity stereotypes"
+      "Definition"
+        "Participant in interaction"
+      Actor
+        "Stick figure symbol"
+      Object
+        "Rectangle + dashed line"
+      "Stereotypes"
+        "Boundary / Control / Entity"
     Messages
-      "Synchronous (solid arrow, filled head)"
-      "Asynchronous (solid arrow, open head)"
-      "Return (dashed arrow back)"
-      "Create (arrow to lifeline head)"
-      "Destroy (X at end of lifeline)"
+      Synchronous
+        "Solid arrow"
+        "Filled head"
+      Asynchronous
+        "Solid arrow"
+        "Open head"
+      Return
+        "Dashed arrow back"
+      Create
+        "Arrow to lifeline head"
+      Destroy
+        "X at end of lifeline"
     Activations
-      "Execution bar (thin rectangle on lifeline)"
+      "Execution bar"
+        "Thin rectangle on lifeline"
     Fragments
-      "alt (if/else)"
-      "loop (repetition)"
-      "opt (optional)"
-      "par (parallel)"
-      "region (critical section)"
+      alt
+        "If/else"
+      loop
+        "Repetition"
+      opt
+        "Optional"
+      par
+        "Parallel"
+      region
+        "Critical section"
     Relationships
-      "Time order: top to bottom"
-      "Actor to Object (start interaction)"
-      "Object to Object (message passing)"
-      "Self-call (arrow loops back)"
+      "Time order"
+        "Top to bottom"
+      "Actor to Object"
+        "Start of interaction"
+      "Object to Object"
+        "Message passing"
+      "Self-call"
+        "Arrow loops back"
+
 ```
 
 ---
