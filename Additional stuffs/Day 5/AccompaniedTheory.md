@@ -1,4 +1,4 @@
-## State
+## Class Diagram (seprated and updated)
 
 ```mermaid
 mindmap
