@@ -1,9 +1,9 @@
 #include "Student.h"
 
-int Student::getGrade(){
+std::string Student::getGrade(){
     return grade;
 }
 
-void Student::setGrade(int& gr){
+void Student::setGrade(std::string& gr){
     grade = std::move(gr);
 }

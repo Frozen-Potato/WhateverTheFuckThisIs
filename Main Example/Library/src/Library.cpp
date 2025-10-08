@@ -4,15 +4,21 @@
 #include "Ultis.h"
 #include <iostream>
 
-Library::Library() {}
+Library::Library()
+    : db(std::make_unique<PostgresAdapter>()) {}
+
 Library::~Library() {}
 
 void Library::addBook(int id, const std::string& title, const std::string& author) {
-    items.emplace(id, std::make_shared<Book>(id, title, author));
+    auto book = std::make_shared<Book>(id, title, author);
+    items.emplace(id, book);
+    db->addBook(*book);
 }
 
 void Library::addMagazine(int id, const std::string& title, int issueNumber) {
-    items.emplace(id, std::make_shared<Magazine>(id, title, issueNumber));
+    auto mag = std::make_shared<Magazine>(id, title, issueNumber);
+    items.emplace(id, mag);
+    db->addMagazine(*mag);
 }
 
 std::shared_ptr<Media> Library::findItemById(int id) {
@@ -20,7 +26,7 @@ std::shared_ptr<Media> Library::findItemById(int id) {
 }
 
 std::shared_ptr<Media> Library::findItemByName(const std::string& name) {
-    return Ultis::findByName(items, name, [](const Media& m){ return m.getName(); });
+    return Ultis::findByName(items, name, [](const Media& m) { return m.getName(); });
 }
 
 void Library::removeItem(int id) {
@@ -44,42 +50,57 @@ void Library::borrowItem(int itemId, int userId) {
     auto item = findItemById(itemId);
     auto user = findUserById(userId);
 
-    if (item && user) {
-        auto member = std::dynamic_pointer_cast<Member>(user);
-        if (member) {
-            member->borrowItem(item);
-            borrowHistory.emplace_back(userId, itemId);
-        } else {
-            throw GeneralFailure("This user type cannot borrow items");
-        }
-    } else {
+    if (!item || !user)
         throw GeneralFailure("Item or User not found");
-    }
-}
 
+    auto member = std::dynamic_pointer_cast<Member>(user);
+    if (!member)
+        throw GeneralFailure("This user type cannot borrow items");
+
+    if (!item->getAvailability())
+        throw BookUnavailable(item->getName() + " is already borrowed");
+
+    member->borrowItem(item);
+
+    BorrowRecord record(
+        static_cast<int>(borrowHistory.size() + 1),
+        userId,
+        itemId,
+        std::chrono::system_clock::now()
+    );
+
+    borrowHistory.push_back(record);
+    db->addBorrowRecord(userId, itemId);
+
+    std::cout << member->getName() << " borrowed " << item->getName() << std::endl;
+}
 
 void Library::returnItem(int itemId, int userId) {
     std::scoped_lock lock(mtx);
     auto item = findItemById(itemId);
     auto user = findUserById(userId);
 
-    if (item && user) {
-        auto member = std::dynamic_pointer_cast<Member>(user);
-        if (member) {
-            member->borrowItem(item);
-            auto it = std::find_if(borrowHistory.begin(), borrowHistory.end(), [&](const BorrowRecord& rec) {
-                return rec.userId == userId && rec.mediaId == itemId && !rec.returnTime.has_value();
-            });
-
-            if (it != borrowHistory.end()) {
-                it->returnTime = std::chrono::system_clock::now();
-            }
-        } else {
-            throw GeneralFailure("This user type cannot return items");
-        }
-    } else {
+    if (!item || !user)
         throw GeneralFailure("Item or User not found");
+
+    auto member = std::dynamic_pointer_cast<Member>(user);
+    if (!member)
+        throw GeneralFailure("This user type cannot return items");
+
+    member->returnItem(item);
+
+    auto it = std::find_if(borrowHistory.begin(), borrowHistory.end(),
+        [&](const BorrowRecord& rec) {
+            return rec.getUserId() == userId && rec.getMediaId() == itemId &&
+                   !rec.getReturnDate().has_value();
+        });
+
+    if (it != borrowHistory.end()) {
+        it->markReturned();
+        db->markReturned(it->getBorrowId());
     }
+
+    std::cout << member->getName() << " returned " << item->getName() << std::endl;
 }
 
 void Library::removeUnavailableItems() {

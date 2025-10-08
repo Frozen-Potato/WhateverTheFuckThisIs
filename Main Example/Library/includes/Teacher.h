@@ -8,6 +8,7 @@ class Teacher: public Member {
         std::string department;
     public:
         using Member::Member;
+        Teacher(int id, std::string name) : Member(id, std::move(name), 5) {}
         std::string getDepartment();
         void setDepartment(std::string& dep);
 };

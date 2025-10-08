@@ -5,11 +5,12 @@
 
 class Student: public Member {
     private:
-        int grade;
+        std::string grade;
     public:
         using Member::Member;
-        int getGrade();
-        void setGrade(int& gr);
+        Student(int id, std::string name) : Member(id, std::move(name), 3) {}
+        std::string getGrade();
+        void setGrade(std::string& gr);
 };
 
 #endif

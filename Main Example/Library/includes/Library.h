@@ -5,13 +5,14 @@
 #include "Media.h"
 #include "Exceptions.h"
 #include "Member.h"
+#include "BorrowRecord.h"
+#include "PostgresAdapter.h"
 
 #include <algorithm>
 #include <unordered_map>
 #include <memory>
 #include <vector>
 #include <mutex>
-#include "BorrowRecord.h"
 
 class Library {
 private:
@@ -19,6 +20,8 @@ private:
     std::unordered_map<int, std::shared_ptr<User>> users;
     std::vector<BorrowRecord> borrowHistory;
     mutable std::mutex mtx;
+
+    std::unique_ptr<PostgresAdapter> db; 
 
 public:
     Library();
