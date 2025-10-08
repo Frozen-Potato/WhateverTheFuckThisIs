@@ -1,5 +1,9 @@
 #include "Student.h"
 
-int Student::getBorrowLimit(){
-    return 3;
+int Student::getGrade(){
+    return grade;
+}
+
+void Student::setGrade(int& gr){
+    grade = std::move(gr);
 }

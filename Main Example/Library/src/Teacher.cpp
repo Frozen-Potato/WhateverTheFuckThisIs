@@ -1,5 +1,9 @@
 #include "Teacher.h"
 
-int Teacher::getBorrowLimit() {
-    return 10;
+std::string Teacher::getDepartment(){
+    return department;
+}
+
+void Teacher::setDepartment(std::string& dep){
+    department = std::move(dep);
 }

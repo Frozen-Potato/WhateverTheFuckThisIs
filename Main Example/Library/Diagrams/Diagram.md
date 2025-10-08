@@ -200,6 +200,14 @@ classDiagram
         +print(out) void
     }
 
+    class User {
+        <<Interface>>
+        +getId() size_t
+        +getName() string
+        +setName(string) void
+        +print(out) void
+    }
+
     class Member {
         +id : int
         +name : string
@@ -216,10 +224,12 @@ classDiagram
     }
 
     class Student {
+        -grade : int
         +getBorrowLimit() int
     }
 
     class Teacher {
+        -department : string
         +getBorrowLimit() int
     }
 
@@ -250,6 +260,8 @@ classDiagram
     Media <|.. Magazine
     Member <|-- Student
     Member <|-- Teacher
+
+    User <|.. Member
 
     %% Aggregation (unfilled diamond)
     Library o-- Media : manages

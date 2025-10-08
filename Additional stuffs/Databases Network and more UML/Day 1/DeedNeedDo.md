@@ -4,7 +4,16 @@ Having erected a respectable edifice of object-oriented timber in the first spri
 
 ---
 
+## Main Purposes:
+- Use-case Diagram
+- Database Diagram (Entity-Relationship Diagram)
+- Initial setup for adding Postgre (SQL) and Mongo(NonSQL)
+
+---
+
 ## Objectives
+- Add user class as pure virtual class and make member inherit (implement user interface)
+- Add timestamp on user creation, borrow event and return event for log/history.
 - Adding use-case diagram.
 - Adding support for PostgreSQL
 
@@ -13,6 +22,7 @@ Having erected a respectable edifice of object-oriented timber in the first spri
 ## Details planned objectives
 
 ### PostgreSQL
+- Add User class as an Interface
 - Install server + client libraries.
 - Define schemas and data mapping for existing domain (`Book`, `Magazine`, `Member`).
 - Create C++ adapters skeletons: `PostgresAdapter`.

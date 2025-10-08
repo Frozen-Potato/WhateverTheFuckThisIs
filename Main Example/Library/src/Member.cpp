@@ -2,9 +2,24 @@
 #include "Exceptions.h"
 #include <iostream>
 
-Member::Member() : id(0), name("Unnamed") {}
+Member::Member(int id, std::string name, int limit)
+        : User(id, std::move(name)), borrowLimit(limit) {}
 
-Member::Member(int id, const std::string& name) : id(id), name(std::move(name)) {}
+size_t Member::getId() const {
+    return static_cast<size_t>(id);
+}
+
+const std::string& Member::getName() const {
+    return name;
+}
+
+void Member::setName(std::string newName) {
+    name = std::move(newName);
+}
+
+int Member::getBorrowLimit() const {
+    return 3;
+}
 
 void Member::borrowItem(const std::shared_ptr<Media>& item) {
     if (!item->getAvailability()) {
@@ -12,7 +27,7 @@ void Member::borrowItem(const std::shared_ptr<Media>& item) {
     }
 
     if (borrowedItems.size() >= static_cast<size_t>(getBorrowLimit())) {
-        throw BorrowLimitExceeded(name + " is not allowed to borrow more items");
+        throw BorrowLimitExceeded(name + " cannot borrow more items");
     }
 
     item->setAvailability(false);
@@ -33,25 +48,20 @@ void Member::returnItem(std::shared_ptr<Media>& item) {
 
 bool Member::allBorrowedUnavailable(const std::unordered_map<int, std::shared_ptr<Media>>& libItems) const {
     return std::all_of(borrowedItems.begin(), borrowedItems.end(), [&](int id) {
-            auto it = libItems.find(id);
-            return it != libItems.end() && !it->second->getAvailability();
-        }
-    );
+        auto it = libItems.find(id);
+        return it != libItems.end() && !it->second->getAvailability();
+    });
 }
 
 bool Member::hasBorrowed(int itemId) const {
-    return std::any_of(borrowedItems.begin(), borrowedItems.end(), [itemId](int id) { return id == itemId; });
+    return std::any_of(borrowedItems.begin(), borrowedItems.end(),
+                       [itemId](int id) { return id == itemId; });
 }
 
-const std::string& Member::getName() const {
-    return name;
-}
-
-bool Member::operator==(Member& person) {
+bool Member::operator==(const Member& person) const {
     return name == person.getName();
 }
 
-std::ostream& operator<<(std::ostream& out, const Member& mem) {
-    out << "Member[ID=" << mem.id << ", Name=" << mem.name << "]";
-    return out;
+void Member::print(std::ostream& out) const {
+    out << "Member[ID=" << id << ", Name=" << name << "]";
 }

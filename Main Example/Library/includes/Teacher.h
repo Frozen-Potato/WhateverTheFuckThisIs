@@ -4,9 +4,12 @@
 #include "Member.h"
 
 class Teacher: public Member {
+    private:
+        std::string department;
     public:
         using Member::Member;
-        int getBorrowLimit() override;
+        std::string getDepartment();
+        void setDepartment(std::string& dep);
 };
 
 #endif
