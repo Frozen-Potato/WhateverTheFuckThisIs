@@ -3,6 +3,17 @@
 #include "Magezine.h"
 #include "Ultis.h"
 #include <iostream>
+#include "MongoLogger.h"
+
+static void logToMongo(const std::string& level, const std::string& message, const std::string& user = "") {
+    static EnvLoader env;                     // Loaded once
+    static MongoLogger logger(env.getMongoUrl());  // Created once
+    try {
+        logger.logEvent(level, message, user);
+    } catch (const std::exception& e) {
+        std::cerr << "[MongoLogger] Warning: " << e.what() << std::endl;
+    }
+}
 
 Library::Library()
     : db(std::make_unique<PostgresAdapter>()) {}
@@ -13,12 +24,16 @@ void Library::addBook(int id, const std::string& title, const std::string& autho
     auto book = std::make_shared<Book>(id, title, author);
     items.emplace(id, book);
     db->addBook(*book);
+    
+    logToMongo("INFO", "Added book: " + title);
 }
 
 void Library::addMagazine(int id, const std::string& title, int issueNumber) {
     auto mag = std::make_shared<Magazine>(id, title, issueNumber);
     items.emplace(id, mag);
     db->addMagazine(*mag);
+
+    logToMongo("INFO", "Added magazine: " + title);
 }
 
 std::shared_ptr<Media> Library::findItemById(int id) {
@@ -31,6 +46,7 @@ std::shared_ptr<Media> Library::findItemByName(const std::string& name) {
 
 void Library::removeItem(int id) {
     items.erase(id);
+    logToMongo("WARN", "Removed item ID: " + std::to_string(id));
 }
 
 std::shared_ptr<User> Library::findUserById(int id) {
@@ -43,6 +59,7 @@ std::shared_ptr<User> Library::findUserByName(const std::string& name) {
 
 void Library::removeUser(int id) {
     users.erase(id);
+    logToMongo("WARN", "Removed user ID: " + std::to_string(id));
 }
 
 void Library::borrowItem(int itemId, int userId) {
@@ -72,7 +89,9 @@ void Library::borrowItem(int itemId, int userId) {
     borrowHistory.push_back(record);
     db->addBorrowRecord(userId, itemId);
 
-    std::cout << member->getName() << " borrowed " << item->getName() << std::endl;
+    std::string msg = member->getName() + " borrowed " + item->getName();
+    std::cout << msg << std::endl;
+    logToMongo("ACTION", msg, member->getName());
 }
 
 void Library::returnItem(int itemId, int userId) {
@@ -100,7 +119,10 @@ void Library::returnItem(int itemId, int userId) {
         db->markReturned(it->getBorrowId());
     }
 
-    std::cout << member->getName() << " returned " << item->getName() << std::endl;
+    std::string msg = member->getName() + " returned " + item->getName();
+    std::cout << msg << std::endl;
+
+    logToMongo("ACTION", msg, member->getName());
 }
 
 void Library::removeUnavailableItems() {

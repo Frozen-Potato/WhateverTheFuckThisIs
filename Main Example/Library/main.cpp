@@ -2,6 +2,8 @@
 #include "Student.h"
 #include "Teacher.h"
 #include "Ultis.h"
+#include "MongoLogger.h"
+
 #include <iostream>
 #include <thread>
 #include <cstdlib>
@@ -17,9 +19,13 @@ void borrowTask(Library& lib, int memberId, int itemId) {
 
 int main() {
     try {
+        EnvLoader env;
+        MongoLogger logger(env.getMongoUrl());
+        logger.logEvent("INFO", "Library system started");
+
         std::cout << "Initializing Library System...\n";
         Library lib; // Auto-connects to PostgreSQL via PostgresAdapter
-
+        
         // --- Add Media ---
         std::cout << "\n[Setup] Adding Books and Magazines...\n";
         lib.addBook(1, "The C++ Programming Language", "Bjarne Stroustrup");

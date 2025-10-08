@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16
+    image: postgres:18
     container_name: library_pg
     restart: always
     environment:
@@ -14,5 +14,32 @@ services:
       - ./db/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
       - ./db/seed.sql:/docker-entrypoint-initdb.d/2_seed.sql
 
+  mongo:
+    image: mongo:8
+    container_name: library_mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: librarylogs
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodata:/data/db
+
+  mongo-express:
+    image: mongo-express
+    container_name: library_mongo_ui
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+    ports:
+      - "8082:8081"
+
+
 volumes:
   pgdata:
+  mongodata:
