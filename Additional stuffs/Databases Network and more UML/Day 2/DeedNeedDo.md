@@ -28,3 +28,6 @@
 
 ## UML Exercise
 1. Use Case Diagram.
+
+## QA
+How to do enviroment variable ?
