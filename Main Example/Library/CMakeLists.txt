@@ -1,65 +1,96 @@
-cmake_minimum_required(VERSION 3.20)
-project(library_app LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.16)
+project(LibrarySystem CXX)
 
-# Require C++20
+
+#  General settings
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Add warnings
-if (MSVC)
-    add_compile_options(/W4)
+# Allow verbose output during linking (useful for debugging)
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
+
+#  Include directories
+
+include_directories(
+    ${PROJECT_SOURCE_DIR}/includes
+    ${PROJECT_SOURCE_DIR}/includes/Interface
+    ${PROJECT_SOURCE_DIR}/includes/db
+    ${PROJECT_SOURCE_DIR}/ultis
+    /usr/local/include           # for libpqxx and mongocxx
+    /usr/include/postgresql
+)
+
+
+#  Source files
+
+file(GLOB_RECURSE SOURCES
+    ${PROJECT_SOURCE_DIR}/src/*.cpp
+    ${PROJECT_SOURCE_DIR}/ultis/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/db/*.cpp
+    ${PROJECT_SOURCE_DIR}/main.cpp
+)
+
+add_executable(library_app ${SOURCES})
+
+
+# Link directories (priority to /usr/local/lib)
+
+link_directories(
+    /usr/local/lib
+    /usr/lib/x86_64-linux-gnu
+)
+
+
+# PostgreSQL and libpqxx
+
+find_package(PostgreSQL REQUIRED)
+
+# Prefer manually built libpqxx
+if (EXISTS "/usr/local/lib/libpqxx.so")
+    message(STATUS "Using custom libpqxx from /usr/local/lib")
+    set(PQXX_LIB "/usr/local/lib/libpqxx.so")
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
+    message(WARNING "Falling back to system libpqxx")
+    set(PQXX_LIB "pqxx")
 endif()
 
-# --- Include directories ---
-include_directories(
-    ${CMAKE_SOURCE_DIR}/includes
-    ${CMAKE_SOURCE_DIR}/includes/Interface
-    ${CMAKE_SOURCE_DIR}/includes/db
-    ${CMAKE_SOURCE_DIR}/ultis
-)
 
-# --- Source files ---
-file(GLOB SRC_FILES
-    "${CMAKE_SOURCE_DIR}/src/*.cpp"
-    "${CMAKE_SOURCE_DIR}/ultis/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/db/*.cpp"
-)
+# MongoDB (libmongocxx and libbsoncxx)
 
-add_executable(${PROJECT_NAME}
-    ${SRC_FILES}
-    main.cpp
-)
-
-# --- Threads ---
-find_package(Threads REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
-
-# --- PostgreSQL (libpqxx) ---
+# If you installed with /usr/local
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(PQXX REQUIRED libpqxx)
+pkg_check_modules(MONGOCXX REQUIRED libmongocxx)
+pkg_check_modules(BSONCXX REQUIRED libbsoncxx)
 
-include_directories(${PQXX_INCLUDE_DIRS})
-link_directories(${PQXX_LIBRARY_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${PQXX_LIBRARIES})
+include_directories(${MONGOCXX_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
+link_directories(${MONGOCXX_LIBRARY_DIRS} ${BSONCXX_LIBRARY_DIRS})
 
-# --- MongoDB (mongocxx) ---
-find_package(mongocxx REQUIRED)
-find_package(bsoncxx REQUIRED)
+
+# Link all dependencies
 
 target_link_libraries(library_app
     PRIVATE
-        mongocxx::mongocxx_shared
-        bsoncxx::bsoncxx_shared
+        ${PQXX_LIB}
+        pq
+        ${MONGOCXX_LIBRARIES}
+        ${BSONCXX_LIBRARIES}
 )
 
-# --- Platform-specific options ---
+
+#  Platform-specific tweaks
+
 if (WIN32)
+    message(STATUS "Building for Windows (MSYS2 detected)")
     add_definitions(-DWIN32_LEAN_AND_MEAN)
+    target_link_libraries(library_app PRIVATE ws2_32)
+elseif(UNIX)
+    message(STATUS "Building for Linux / WSL environment")
 endif()
 
-# --- Output ---
-message(STATUS "Building Library Management System with PostgreSQL & Threads")
-message(STATUS "Include dirs: ${CMAKE_SOURCE_DIR}/includes")
+
+# Installation (optional)
+
+install(TARGETS library_app RUNTIME DESTINATION bin)

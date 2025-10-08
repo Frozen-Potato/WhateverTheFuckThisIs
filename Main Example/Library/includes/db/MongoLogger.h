@@ -21,9 +21,6 @@ public:
     explicit MongoLogger(const std::string& mongoUrl)
         : client(mongocxx::uri{mongoUrl}),
           db(client["librarylogs"]) {
-        if (!instance) {
-            instance = std::make_unique<mongocxx::instance>();
-        }
         std::cout << "[Mongo] Connected to " << mongoUrl << "\n";
     }
 

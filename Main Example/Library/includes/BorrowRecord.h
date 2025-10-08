@@ -46,7 +46,11 @@ inline std::ostream& operator<<(std::ostream& out, const BorrowRecord& record) {
     auto toTimeString = [](const auto& tp) {
         std::time_t t = std::chrono::system_clock::to_time_t(tp);
         char buf[26];
-        ctime_s(buf, sizeof(buf), &t);
+        #ifdef _WIN32
+            ctime_s(buf, sizeof(buf), &t);  // Windows
+        #else
+            ctime_r(&t, buf);               // POSIX 
+        #endif
         buf[strcspn(buf, "\n")] = '\0';
         return std::string(buf);
     };

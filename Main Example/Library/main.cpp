@@ -4,6 +4,7 @@
 #include "Ultis.h"
 #include "MongoLogger.h"
 
+#include <mongocxx/instance.hpp>
 #include <iostream>
 #include <thread>
 #include <cstdlib>
@@ -19,6 +20,7 @@ void borrowTask(Library& lib, int memberId, int itemId) {
 
 int main() {
     try {
+        mongocxx::instance instance{};
         EnvLoader env;
         MongoLogger logger(env.getMongoUrl());
         logger.logEvent("INFO", "Library system started");
