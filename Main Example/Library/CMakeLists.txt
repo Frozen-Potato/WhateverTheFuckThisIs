@@ -45,6 +45,16 @@ include_directories(${PQXX_INCLUDE_DIRS})
 link_directories(${PQXX_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PQXX_LIBRARIES})
 
+# --- MongoDB (mongocxx) ---
+find_package(mongocxx REQUIRED)
+find_package(bsoncxx REQUIRED)
+
+target_link_libraries(library_app
+    PRIVATE
+        mongocxx::mongocxx_shared
+        bsoncxx::bsoncxx_shared
+)
+
 # --- Platform-specific options ---
 if (WIN32)
     add_definitions(-DWIN32_LEAN_AND_MEAN)
