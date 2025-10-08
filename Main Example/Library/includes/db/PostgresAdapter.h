@@ -5,12 +5,17 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <stdexcept>
 
 #include "Member.h"
 #include "Media.h"
 #include "Book.h"
 #include "Magezine.h"
 #include "BorrowRecord.h"
+#include "EnvLoader.h"
+#include "Student.h"
+#include "Teacher.h"
 
 class PostgresAdapter {
 private:

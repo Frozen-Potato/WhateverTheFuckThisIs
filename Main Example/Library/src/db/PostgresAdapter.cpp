@@ -1,7 +1,4 @@
 #include "PostgresAdapter.h"
-#include "EnvLoader.h"
-#include <iostream>
-#include <stdexcept>
 
 static std::chrono::system_clock::time_point parseTimestamp(const std::string& ts) {
     std::tm tm = {};
@@ -33,23 +30,35 @@ std::string PostgresAdapter::getConnectionFromEnv() {
 void PostgresAdapter::addMember(const Member& member) {
     pqxx::work txn(conn);
 
+    std::string role = "MEMBER";
+    if (dynamic_cast<const Student*>(&member)) {
+        role = "STUDENT";
+    } else if (dynamic_cast<const Teacher*>(&member)) {
+        role = "TEACHER";
+    }
+
+    // Insert into users table (explicit id + consistent type)
     txn.exec_params(
-        "INSERT INTO users (name, user_type) VALUES ($1, 'MEMBER') "
+        "INSERT INTO users (id, name, user_type) "
+        "VALUES ($1, $2, 'MEMBER') "
         "ON CONFLICT (id) DO NOTHING;",
+        member.getId(),
         member.getName()
     );
 
+    // Insert into members table
     txn.exec_params(
         "INSERT INTO members (id, role, borrow_limit) "
-        "VALUES ((SELECT id FROM users WHERE name = $1), $2, $3) "
+        "VALUES ($1, $2, $3) "
         "ON CONFLICT (id) DO NOTHING;",
-        member.getName(),
-        "STUDENT",    // or detect from subclass if you wish
-        3
+        member.getId(),
+        role,
+        member.getBorrowLimit()
     );
 
     txn.commit();
 }
+
 
 std::vector<Member> PostgresAdapter::getAllMembers() {
     pqxx::work txn(conn);
@@ -73,8 +82,10 @@ std::vector<Member> PostgresAdapter::getAllMembers() {
 void PostgresAdapter::addBook(const Book& book) {
     pqxx::work txn(conn);
     txn.exec_params(
-        "INSERT INTO media (title, author, media_type, is_available) "
-        "VALUES ($1, $2, 'BOOK', TRUE);",
+        "INSERT INTO media (id, title, author, media_type, is_available) "
+        "VALUES ($1, $2, $3, 'BOOK', TRUE) "
+        "ON CONFLICT (id) DO NOTHING;",
+        book.getId(),
         book.getName(),
         book.getAuthor()
     );
@@ -84,8 +95,10 @@ void PostgresAdapter::addBook(const Book& book) {
 void PostgresAdapter::addMagazine(const Magazine& mag) {
     pqxx::work txn(conn);
     txn.exec_params(
-        "INSERT INTO media (title, issue_number, media_type, is_available) "
-        "VALUES ($1, $2, 'MAGAZINE', TRUE);",
+        "INSERT INTO media (id, title, issue_number, media_type, is_available) "
+        "VALUES ($1, $2, $3, 'MAGAZINE', TRUE) "
+        "ON CONFLICT (id) DO NOTHING;",
+        mag.getId(),
         mag.getName(),
         mag.getIssueNumber()
     );
