@@ -36,7 +36,12 @@ public:
 
     template<typename T, typename... Args>
     void addUser(int id, Args&&... args) {
-        users.emplace(id, std::make_shared<T>(std::forward<Args>(args)...));
+        auto user = std::make_shared<T>(std::forward<Args>(args)...);
+        users.emplace(id, user);
+
+        if constexpr (std::is_base_of<Member, T>::value) {
+            db->addMember(*user);  // insert into DB
+        }
     }
 
     std::shared_ptr<User> findUserById(int id);

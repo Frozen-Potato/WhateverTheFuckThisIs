@@ -3,7 +3,6 @@
 ---
 
 ## Main Purposes:
-- Understanding REST API
 - Expose minimal routes to interact with the system.
 - Sequence Diagram for some routes
 

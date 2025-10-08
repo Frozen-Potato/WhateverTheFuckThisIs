@@ -1,9 +1,8 @@
-# Day 3 – REST API
+# Day 4 – REST API
 
 ---
 
 ## Main Purposes:
-- Understanding gRPC
 
 ---
 
