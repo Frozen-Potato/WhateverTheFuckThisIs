@@ -62,6 +62,10 @@ void Library::removeUser(int id) {
     logToMongo("WARN", "Removed user ID: " + std::to_string(id));
 }
 
+std::vector<std::shared_ptr<Media>> Library::getAllMedias(){
+    return db->getAllMedia();
+};
+
 void Library::borrowItem(int itemId, int userId) {
     std::scoped_lock lock(mtx);
     auto item = findItemById(itemId);

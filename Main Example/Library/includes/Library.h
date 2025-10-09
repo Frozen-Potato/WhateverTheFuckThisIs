@@ -48,6 +48,8 @@ public:
     std::shared_ptr<User> findUserByName(const std::string& name);
     void removeUser(int id);
 
+    std::vector<std::shared_ptr<Media>> getAllMedias();
+
     void borrowItem(int itemId, int userId);
     void returnItem(int itemId, int userId);
     void removeUnavailableItems();
