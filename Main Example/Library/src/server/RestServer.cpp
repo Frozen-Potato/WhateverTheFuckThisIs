@@ -2,12 +2,12 @@
 #include "Library.h"
 #include "EnvLoader.h"
 #include "MongoLogger.h"
+#include "RestServer.h"
 
 #include <nlohmann/json.hpp>
 
-int main() {
+void openRestServer() {
     httplib::Server svr;
-    mongocxx::instance instance{};
 
     EnvLoader env;
     MongoLogger logger(env.getMongoUrl());
@@ -15,14 +15,29 @@ int main() {
 
     // GET /medias
     svr.Get("/medias", [&](const httplib::Request&, httplib::Response& res) {
-        auto books = library.getAllMedias();  // implement this
-        nlohmann::json j;
-        for (const auto& b : books) {
-            j.push_back({
-                {"id", b->getId()},
-                {"title", b->getName()},
-                {"available", b->getAvailability()}
-            });
+        auto medias = library.getAllMedias();
+        nlohmann::json j = nlohmann::json::array();
+
+        for (const auto& m : medias) {
+            nlohmann::json entry;
+            entry["id"] = m->getId();
+            entry["title"] = m->getName();
+            entry["available"] = m->getAvailability();
+
+            // Detect the type at runtime
+            if (auto book = std::dynamic_pointer_cast<Book>(m)) {
+                entry["type"] = "BOOK";
+                entry["author"] = book->getAuthor();
+            } 
+            else if (auto mag = std::dynamic_pointer_cast<Magazine>(m)) {
+                entry["type"] = "MAGAZINE";
+                entry["issue_number"] = mag->getIssueNumber();
+            } 
+            else {
+                entry["type"] = "UNKNOWN";
+            }
+
+            j.push_back(entry);
         }
         res.set_content(j.dump(), "application/json");
     });
