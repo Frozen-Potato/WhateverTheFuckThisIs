@@ -3,6 +3,7 @@
 #include "EnvLoader.h"
 #include "MongoLogger.h"
 #include "RestServer.h"
+#include "Ultis.h"
 
 #include <nlohmann/json.hpp>
 
@@ -47,9 +48,14 @@ void openRestServer() {
         auto body = nlohmann::json::parse(req.body);
         int userId = body["userId"];
         int mediaId = body["mediaId"];
-        library.borrowItem(userId, mediaId);
-        logger.logEvent("INFO", "User " + std::to_string(userId) + " borrowed media " + std::to_string(mediaId));
-        res.set_content("{\"status\":\"borrowed\"}", "application/json");
+
+        auto result = Ultis::tryExecute(logger, "Borrow Media", userId, [&](){ library.borrowItem(mediaId, userId); });
+
+        res.status = result.httpCode;
+        res.set_content(
+            R"({"message": ")" + result.message + R"("})",
+            "application/json"
+        );
     });
 
     // POST /return
@@ -57,9 +63,14 @@ void openRestServer() {
         auto body = nlohmann::json::parse(req.body);
         int userId = body["userId"];
         int mediaId = body["mediaId"];
-        library.returnItem(userId, mediaId);
-        logger.logEvent("INFO", "Returned media id " + std::to_string(mediaId) + " by user " + std::to_string(userId));
-        res.set_content("{\"status\":\"returned\"}", "application/json");
+
+        auto result = Ultis::tryExecute(logger, "Return Media", userId, [&](){ library.returnItem(userId, mediaId); });
+        
+        res.status = result.httpCode;
+        res.set_content(
+            R"({"message": ")" + result.message + R"("})",
+            "application/json"
+        );
     });
 
     std::cout << "Server listening on http://localhost:8080" << std::endl;
