@@ -54,6 +54,39 @@ void PostgresAdapter::addMember(const Member& member) {
     txn.commit();
 }
 
+std::shared_ptr<Media> PostgresAdapter::getMediaById(const int& id){
+    auto res = txn.exec(
+        "SELECT id, title, author, issue_number, is_available, media_type "
+        "FROM media "
+        "WHERE id = $1 ;",
+        pqxx::params(id);
+    );
+
+    if(res.empty()){
+        return nullptr;
+    }
+
+    const auto& row = res[0];
+    std::string type = row["media_type"].as<std::string>();
+    if (type == "BOOK") {
+        auto b = std::make_shared<Book>(
+            row["id"].as<int>(),
+            row["title"].as<std::string>(),
+            row["author"].as<std::string>()
+        );
+        b->setAvailability(row["is_available"].as<bool>());
+        return b;
+    } else {
+        auto m = std::make_shared<Magazine>(
+            row["id"].as<int>(),
+            row["title"].as<std::string>(),
+            row["issue_number"].is_null() ? 0 : row["issue_number"].as<int>()
+        );
+        m->setAvailability(row["is_available"].as<bool>());
+        return m;
+    }
+}
+
 std::vector<Member> PostgresAdapter::getAllMembers() {
     pqxx::work txn(conn);
     auto res = txn.exec(
