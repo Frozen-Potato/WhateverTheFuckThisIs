@@ -55,11 +55,12 @@ void PostgresAdapter::addMember(const Member& member) {
 }
 
 std::shared_ptr<Media> PostgresAdapter::getMediaById(const int& id){
+    pqxx::work txn(conn);
     auto res = txn.exec(
         "SELECT id, title, author, issue_number, is_available, media_type "
         "FROM media "
         "WHERE id = $1 ;",
-        pqxx::params(id);
+        pqxx::params(id)
     );
 
     if(res.empty()){

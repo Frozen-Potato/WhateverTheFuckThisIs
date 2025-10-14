@@ -43,9 +43,9 @@ void openRestServer() {
         res.set_content(j.dump(), "application/json");
     });
 
-    svr.Post("/media", [&](const httplib::Request&, httplib::Response& res){
+    svr.Post("/media", [&](const httplib::Request& req, httplib::Response& res){
         try {
-            auto body = nlohmann::json::parse(req.body);
+            auto j = nlohmann::json::parse(req.body);
 
             if (!j.contains("media_type") || !j.contains("id")) {
                 res.status = 400;
@@ -53,7 +53,7 @@ void openRestServer() {
                 return;
             }
 
-            if (library.findItemById(j['id']) != nullptr){
+            if (library.findItemById(j["id"]) != nullptr){
                 res.status = 400;
                 res.set_content(R"({"error": "Duplicate id"})", "application/json");
                 return;
@@ -112,7 +112,7 @@ void openRestServer() {
             res.set_content(R"({"error": "Internal server error"})", "application/json");
         }
 
-})
+    });
 
     // POST /borrow
     svr.Post("/borrow", [&](const httplib::Request& req, httplib::Response& res) {

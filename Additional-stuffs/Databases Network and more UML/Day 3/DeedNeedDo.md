@@ -24,3 +24,7 @@
 
 ## UML Exercise
 1. Use Case Diagram.
+
+### QA:
+
+1. **ctime_s** vs **ctime_r**
