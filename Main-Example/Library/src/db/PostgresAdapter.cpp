@@ -168,6 +168,69 @@ void PostgresAdapter::updateMediaAvailability(int mediaId, bool available) {
     txn.commit();
 }
 
+MediaCopy PostgresAdapter::getCopy(int copyId) {
+    pqxx::work txn(conn);
+    auto res = txn.exec("SELECT copy_id, media_id, condition, is_available FROM media_copy WHERE copy_id = $1;",
+                        pqxx::params(copyId));
+    if (res.empty()) throw std::runtime_error("Copy not found");
+    const auto& r = res[0];
+    MediaCopy c;
+    c.copyId = r["copy_id"].as<int>();
+    c.mediaId = r["media_id"].as<int>();
+    c.condition = condition_from_string(r["condition"].as<std::string>());
+    c.isAvailable = r["is_available"].as<bool>();
+    return c;
+}
+
+MediaCopy PostgresAdapter::createMediaCopy(int mediaId, const std::string& condition) {
+    pqxx::work txn(conn);
+    auto res = txn.exec(
+        "INSERT INTO media_copy (media_id, condition, is_available) "
+        "VALUES ($1, $2, TRUE) "
+        "RETURNING copy_id, media_id, condition, is_available;",
+        pqxx::params(mediaId, condition)
+    );
+    txn.commit();
+    const auto& r = res[0];
+    MediaCopy c;
+    c.copyId = r["copy_id"].as<int>();
+    c.mediaId = r["media_id"].as<int>();
+    c.condition = condition_from_string(r["condition"].as<std::string>());
+    c.isAvailable = r["is_available"].as<bool>();
+    return c;
+}
+
+std::vector<MediaCopy> PostgresAdapter::listCopiesByMedia(int mediaId) {
+    pqxx::work txn(conn);
+    auto res = txn.exec(
+        "SELECT copy_id, media_id, condition, is_available "
+        "FROM media_copy WHERE media_id = $1 ORDER BY copy_id;",
+        pqxx::params(mediaId)
+    );
+    std::vector<MediaCopy> v;
+    v.reserve(res.size());
+    for (const auto& r : res) {
+        MediaCopy c;
+        c.copyId = r["copy_id"].as<int>();
+        c.mediaId = r["media_id"].as<int>();
+        c.condition = condition_from_string(r["condition"].as<std::string>());
+        c.isAvailable = r["is_available"].as<bool>();
+        v.push_back(c);
+    }
+    return v;
+}
+
+MediaCopy PostgresAdapter::updateCopy(int copyId, std::optional<std::string> newCondition, std::optional<bool> newAvailability) {
+    pqxx::work txn(conn);
+    // Build dynamic update; you can also do a single CASE expression if you prefer.
+    if (newCondition.has_value())
+        txn.exec("UPDATE media_copy SET condition = $1 WHERE copy_id = $2;", pqxx::params(*newCondition, copyId));
+    if (newAvailability.has_value())
+        txn.exec("UPDATE media_copy SET is_available = $1 WHERE copy_id = $2;", pqxx::params(*newAvailability, copyId));
+    txn.commit();
+    return getCopy(copyId);
+}
+
 // --- Borrow operations ---
 void PostgresAdapter::addBorrowRecord(int userId, int mediaId) {
     pqxx::work txn(conn);

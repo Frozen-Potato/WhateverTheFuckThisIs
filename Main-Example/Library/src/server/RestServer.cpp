@@ -135,7 +135,7 @@ void openRestServer() {
         int userId = body["userId"];
         int mediaId = body["mediaId"];
 
-        auto result = Ultis::tryExecute(logger, "Return Media", userId, [&](){ library.returnItem(userId, mediaId); });
+        auto result = Ultis::tryExecute(logger, "Return Media", userId, [&](){ library.returnItem(mediaId,userId); });
         
         res.status = result.httpCode;
         res.set_content(
