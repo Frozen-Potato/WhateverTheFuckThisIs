@@ -44,7 +44,7 @@ classDiagram
         +print(out) void
     }
 
-    %% Physical copy (no location field anymore)
+    %% Physical copy
     class MediaCopy {
         -copyId : int
         -mediaId : int
