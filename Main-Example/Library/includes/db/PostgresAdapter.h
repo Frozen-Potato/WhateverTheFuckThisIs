@@ -32,6 +32,7 @@ public:
     std::vector<Member> getAllMembers();
 
     // --- Media operations ---
+    std::shared_ptr<Media> getMediaById(const int& id);
     void addBook(const Book& book);
     void addMagazine(const Magazine& mag);
     std::vector<std::shared_ptr<Media>> getAllMedia();
@@ -41,7 +42,7 @@ public:
     MediaCopy getCopy(int copyId);
     MediaCopy createMediaCopy(int mediaId, const std::string& condition);
     std::vector<MediaCopy> listCopiesByMedia(int mediaId);
-    MediaCopy updateCopy(int copyId, std::optional<std::string> newAvailbility, std::optional<std::string> newCondition);
+    MediaCopy updateCopy(int copyId, std::optional<std::string> newCondition, std::optional<bool> newAvailability);
 
     // --- Borrow operations ---
     void addBorrowRecord(int userId, int mediaId);
